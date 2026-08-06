@@ -15,7 +15,11 @@ if [[ -z "${MOONSHOT_API_KEY:-}" ]]; then
     fi
     read -rsp "Kimi API key: " MOONSHOT_API_KEY
     echo
+    if [[ -z "$MOONSHOT_API_KEY" ]]; then
+        echo "No API key entered." >&2
+        exit 1
+    fi
     export MOONSHOT_API_KEY
 fi
 
-exec .venv/bin/python kimi_shoe_photo.py "$@"
+exec .venv/bin/python webcam_kimi_shoe_detector.py "$@"

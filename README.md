@@ -59,21 +59,20 @@ If the current terminal does not already have `MOONSHOT_API_KEY`, the launcher
 asks for it invisibly before starting. The one-time setup command is
 `.venv/bin/python -m pip install -r requirements-api.txt`.
 
-To test only the Kimi connection, without opening the camera, run:
-
-```bash
-./test_kimi.sh
-```
-
-For the lean one-photo Kimi shoe detector, run:
+For the one-frame Kimi webcam shoe detector, run:
 
 ```bash
 ./shoe_photo.sh
 ```
 
+If `MOONSHOT_API_KEY` is not already set, the launcher asks for it invisibly.
 Press Space or Enter to capture one frame. Kimi receives that single image,
-returns normalized shoe boxes, and the program saves a boxed JPEG and JSON
-under `data/kimi_shoe_photos/`.
+groups visually matching shoes into frame-local pairs, estimates left/right,
+and marks each shoe's heel-to-toe angle. Each pair receives a different box
+color; the arrow points from heel to toe. Angles are image coordinates: right
+is 0° and down is 90°. The program saves the raw and boxed JPEGs under
+`data/kimi_shoe_photos/`. Treat pair and side labels as visual estimates and
+confirm them before using them for robot motion.
 
 In the camera window: clear the floor and press `R`, place the shoes, then
 press `A` to identify them. Press `S` afterward to save the labeled result.
