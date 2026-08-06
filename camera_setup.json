@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "camera_height_cm": 65.0,
+  "horizontal_fov_deg": 55.0,
+  "camera_mount": "overhead_downward",
+  "work_area_cm": {
+    "width": 60.0,
+    "height": 35.0
+  },
+  "measurement_status": "approximate",
+  "notes": [
+    "The 55 degree value is currently interpreted as horizontal field of view, not camera tilt.",
+    "Use floor_calibration.json from real camera corner clicks as the runtime pixel-to-floor authority."
+  ]
+}
