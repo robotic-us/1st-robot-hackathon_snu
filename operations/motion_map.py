@@ -1,11 +1,12 @@
-"""Verified PHORCE motion-slot assignments.
+"""The ten camera situations and their verified PHORCE motions.
 
-Fill a value only after the corresponding motion has been taught in PHORCE
-Studio, manually tested, and confirmed with ``phorce list``.  ``None`` means
-the operation is deliberately unavailable.
+Each situation is one known shoe centre and toe direction in the fixed overhead
+camera view.  Its matching PHORCE slot should contain the *complete* taught
+motion: collect from that situation, then place at the one destination in
+front of the robot (0 degrees).
 
-Motion IDs are not stored in this repository: the PCM's SD card is the source
-of truth.  Do not copy the old brainstormed IDs from the reference document.
+Fill ``center_px`` and ``motion_id`` only after camera/robot calibration and
+manual motion testing.  An unconfigured situation is ignored.
 """
 
 from __future__ import annotations
@@ -15,25 +16,29 @@ from typing import Optional
 
 
 @dataclass(frozen=True)
-class MotionMap:
-    """One short, safe taught motion per state transition."""
-
-    approach_station: Optional[int] = None
-    probe_shoe: Optional[int] = None
-    retract_probe: Optional[int] = None
-    lift_shoe: Optional[int] = None
-    place_shoe: Optional[int] = None
-    return_home: Optional[int] = None
-
-
-# This is intentionally empty.  Set verified IDs here after teaching motions.
-MOTIONS = MotionMap()
+class Situation:
+    name: str
+    # Centre of the shoe in pixels in the live 1280x720 camera image.
+    center_px: Optional[tuple[int, int]]
+    # Heel -> toe direction; 0° is up/away from the robot, left is positive.
+    angle_deg: float
+    # How close a detected shoe must be to this taught situation.
+    position_tolerance_px: float = 55.0
+    angle_tolerance_deg: float = 15.0
+    # PCM slot ID (1..50), after manual verification. None = unavailable.
+    motion_id: Optional[int] = None
 
 
-def validate_motion_id(motion_id: Optional[int], action: str) -> int:
-    """Reject unconfigured and out-of-contract motion requests."""
-    if motion_id is None:
-        raise RuntimeError(f"No verified motion ID configured for '{action}'.")
-    if not 1 <= motion_id <= 50:
-        raise RuntimeError(f"Invalid motion ID {motion_id} for '{action}'; valid range is 1..50.")
-    return motion_id
+# Replace each ``None`` centre and motion ID with measured, verified values.
+SITUATIONS = (
+    Situation("situation_01", None, 0.0),
+    Situation("situation_02", None, 0.0),
+    Situation("situation_03", None, 0.0),
+    Situation("situation_04", None, 0.0),
+    Situation("situation_05", None, 0.0),
+    Situation("situation_06", None, 0.0),
+    Situation("situation_07", None, 0.0),
+    Situation("situation_08", None, 0.0),
+    Situation("situation_09", None, 0.0),
+    Situation("situation_10", None, 0.0),
+)
