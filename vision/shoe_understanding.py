@@ -68,6 +68,29 @@ PAIR_SCHEMA: dict[str, Any] = {
 }
 
 
+# A joint request is more reliable for left/right than independent guesses: the
+# model can compare the two complementary shapes in the same contact sheet.
+SCENE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "sides": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "track_id": {"type": "integer"},
+                    "side": {"type": "string", "enum": ["left", "right", "unknown"]},
+                    "confidence": {"type": "number"},
+                },
+                "required": ["track_id", "side", "confidence"],
+            },
+        },
+        "pairs": PAIR_SCHEMA["properties"]["pairs"],
+    },
+    "required": ["sides", "pairs"],
+}
+
+
 def _gemini_request(parts: list[dict[str, Any]], schema: dict[str, Any], api_key: str, model: str) -> dict[str, Any]:
     payload = {
         "contents": [{"parts": parts}],
@@ -170,6 +193,40 @@ def analyse_pairs(crops: dict[int, np.ndarray], api_key: str, model: str) -> lis
         pairs.append({"track_ids": [first, second], "confidence": confidence})
         used.update((first, second))
     return pairs
+
+
+def analyse_scene(crops: dict[int, np.ndarray], api_key: str, model: str) -> dict[str, Any]:
+    """Jointly identify left/right and likely pairs in one Gemini request."""
+    track_ids = sorted(crops)
+    prompt = (
+        "This contact sheet contains separate overhead sneaker crops labelled TRACK <id>. "
+        "For every listed track, decide whether it is a physical left or right shoe. "
+        "Use the complementary geometry of the visible shoes to help; choose unknown when uncertain. "
+        "Also identify physical left/right pairs only when their material, colour, laces and silhouette clearly match. "
+        f"Only use these IDs: {track_ids}. Do not invent tracks or pair two shoes with the same side."
+    )
+    answer = _gemini_request([{"text": prompt}, _image_part(make_contact_sheet(crops))], SCENE_SCHEMA, api_key, model)
+    sides: dict[int, dict[str, Any]] = {}
+    for item in answer.get("sides", []):
+        if not isinstance(item, dict):
+            continue
+        track_id = item.get("track_id")
+        side = item.get("side")
+        if not isinstance(track_id, int) or track_id not in crops or side not in {"left", "right", "unknown"}:
+            continue
+        sides[track_id] = {"side": side, "confidence": max(0.0, min(1.0, float(item.get("confidence", 0))))}
+    pairs: list[dict[str, Any]] = []
+    used: set[int] = set()
+    for pair in answer.get("pairs", []):
+        ids = pair.get("track_ids") if isinstance(pair, dict) else None
+        if not isinstance(ids, list) or len(ids) != 2 or not all(isinstance(item, int) for item in ids):
+            continue
+        first, second = ids
+        if first == second or first not in crops or second not in crops or first in used or second in used:
+            continue
+        pairs.append({"track_ids": [first, second], "confidence": max(0.0, min(1.0, float(pair.get("confidence", 0))))})
+        used.update((first, second))
+    return {"sides": sides, "pairs": pairs}
 
 
 def draw_understanding(frame: np.ndarray, result: dict[str, Any]) -> None:

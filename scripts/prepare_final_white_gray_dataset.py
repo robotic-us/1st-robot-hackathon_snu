@@ -80,6 +80,8 @@ def add_real(output: Path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default=str(ROOT / "datasets/white_gray_final"))
+    parser.add_argument("--real-only", action="store_true",
+                        help="omit the synthetic images for a real-only baseline")
     args = parser.parse_args()
     output = Path(args.output).resolve()
     if output.exists():
@@ -87,7 +89,8 @@ def main():
     for split in ("train", "val"):
         (output / "images" / split).mkdir(parents=True)
         (output / "labels" / split).mkdir(parents=True)
-    add_synthetic(output)
+    if not args.real_only:
+        add_synthetic(output)
     add_real(output)
     (output / "data.yaml").write_text(
         f"path: {output}\ntrain: images/train\nval: images/val\n"

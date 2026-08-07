@@ -15,11 +15,12 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--dataset", type=Path, default=ROOT / "synthetic_shoes")
 parser.add_argument("--output", type=Path, default=ROOT / "pose_previews")
 parser.add_argument("--count", type=int, default=36)
+parser.add_argument("--prefix", default="", help="only preview image stems with this prefix")
 args = parser.parse_args()
 DATASET = args.dataset
 OUTPUT = args.output
 PREVIEW_COUNT = args.count
-OUTPUT.mkdir(exist_ok=True)
+OUTPUT.mkdir(parents=True, exist_ok=True)
 
 
 def draw_annotation(draw, values, width, height):
@@ -44,7 +45,12 @@ def draw_annotation(draw, values, width, height):
 for old_preview in OUTPUT.glob("*.png"):
     old_preview.unlink()
 
-all_images = sorted((DATASET / "images").glob("*/*.png"))
+all_images = sorted(
+    image
+    for extension in ("*.png", "*.jpg", "*.jpeg")
+    for image in (DATASET / "images").glob(f"*/{extension}")
+    if image.stem.startswith(args.prefix)
+)
 random.seed(20260807)
 selected_images = random.sample(all_images, min(PREVIEW_COUNT, len(all_images)))
 

@@ -19,8 +19,7 @@ runs/
 *.engine
 *.blend1
 
-# Credentials and the current local tracker copy that contains API credentials
+# Credentials
 .env
 .env.*
 *.key
-vision/live_shoe_tracker.py

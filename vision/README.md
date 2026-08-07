@@ -59,22 +59,31 @@ GPU inference has been verified on this Jetson at 33.2 FPS for the model alone
 at 640 px. Webcam capture, tracking, drawing boxes, and the desktop window add
 overhead, so live FPS will be lower.
 
-## Legacy Kimi orientation
+## Kimi left/right and pair check
 
-Kimi can estimate the toe and heel for each newly stable tracked shoe. It runs
-in the background only once per ByteTrack ID, so the local camera and YOLO
-tracking keep running while the API responds. The green (or amber, low-
-confidence) arrow points from heel to toe.
+The recommended Kimi mode keeps local YOLO as the source of detection,
+toe/heel keypoints, and tracking. As soon as any two tracked shoes are visible,
+Kimi waits until at least two shoes have stayed visible for 2.5 seconds, then
+receives one labelled contact sheet and jointly checks their left/right sides
+and likely pairing. The camera display shows `KIMI WAITING` during that brief
+confirmation period and `KIMI CHECKING...` while the request is running. Green
+side labels meet the confidence threshold; amber labels are advisory. A cyan
+line marks a proposed pair.
 
-Set the key in your shell, then run:
+Set the key in your shell, then run the real-only baseline model:
 
 ```bash
-bash run_live_shoe_tracker_gpu.sh --kimi-orientation
+export KIMI_API_KEY='your-key'
+bash run_live_shoe_tracker_gpu.sh \
+  --model /home/phorce/runs/pose/runs/shoe_pose_real_only_baseline/weights/best.pt \
+  --kimi-understanding
 ```
 
 The default is `kimi-k3`; override it with `--kimi-model <model-name>` if your
-Kimi account enables a different vision-capable model.
-Kimi is retained only as an older experimental option. Prefer Gemini below.
+account enables a different vision-capable model. Kimi is a second opinion for
+left/right and pairing; it does not replace the local toe/heel output.
+
+`--kimi-orientation` is retained for the older toe/heel-only experiment.
 
 ## Gemini sneaker orientation and tongue target
 
@@ -92,9 +101,9 @@ bash run_live_shoe_tracker_gpu.sh --gemini-orientation
 ```
 
 The default model is `gemini-3.5-flash`. It can be changed with
-`--gemini-model <model-name>`. A key in the Python file is convenient for the
-hackathon but must not be committed or shared. This mode remains display-only
-until you test it on your actual shoes.
+`--gemini-model <model-name>`. Set API keys in the shell; never place them in
+source files or commit them. This mode remains display-only until you test it
+on your actual shoes.
 
 The green arrow is the toe/heel axis. Its displayed angle uses the same image
 convention as the robot bearing: straight up is `0°`, left is positive, and
@@ -113,21 +122,22 @@ move or replace the shoe to create a new track if you want another assessment.
 
 ## Gemini shoe understanding and pair hypotheses
 
-The optional full-understanding mode keeps YOLO and ByteTrack as the fast local
-detector/tracker, then asks Gemini once per stable track for shoe type,
-left/right side, toe, heel, visible opening, and a conservative hook target.
-It also sends an occasional labelled contact sheet of up to six visible stable
-tracks so Gemini can propose likely left/right pairs. Results are cached by
-track ID and are visual guidance only.
+The optional full-understanding mode keeps YOLO as the fast local detector.
+When at least two shoes are visible, press `G` to send one labelled contact
+sheet (up to six shoes) to Gemini for a joint left/right and pairing check.
+The display shows `PRESS G` when ready and `GEMINI CHECKING...` during the
+request. Results are visual guidance only.
 
 ```bash
 export GEMINI_API_KEY='your-key'
 bash run_live_shoe_tracker_gpu.sh --gemini-understanding
 ```
 
+The launcher uses `GEMINI_API_KEY` from your exported shell environment. Its
+default local model is the real-only pose baseline; the default cloud model is
+`gemini-3.5-flash`, which supports image input and structured JSON output.
 The display draws a cyan line for each pair hypothesis and labels it with its
-confidence. A green hook label is only a candidate: calibration, collision
-checks, and real hook-insertion tests are still required before a robot motion.
+confidence.
 
 ## Camera calibration
 
