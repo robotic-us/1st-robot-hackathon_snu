@@ -1,6 +1,26 @@
-.venv/
-__pycache__/
+# Local Python and editor state
+**/.venv/
+**/__pycache__/
 *.py[cod]
-data/
+.vscode/
+.idea/
+
+# Large local datasets, renders, models, and Blender assets
+datasets/
+generated/
+real_shoes/
+synthetic_shoes/
+floor/
+obj_files/
+renders/
 runs/
-floor_calibration.json
+*.pt
+*.onnx
+*.engine
+*.blend1
+
+# Credentials and the current local tracker copy that contains API credentials
+.env
+.env.*
+*.key
+vision/live_shoe_tracker.py

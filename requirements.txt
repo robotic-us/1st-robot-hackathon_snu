@@ -1,3 +1,0 @@
-# Dependencies for vision_shoe_test.py
-numpy>=1.26,<3
-opencv-python>=4.10,<5

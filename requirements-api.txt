@@ -1,3 +1,0 @@
-# The OpenAI-compatible client used to call Kimi's vision API.
--r requirements.txt
-openai>=1.99,<3

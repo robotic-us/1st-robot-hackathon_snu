@@ -1,0 +1,9 @@
+# Jetson AGX Orin, JetPack 6.2.x, CUDA 12.6, Python 3.10
+# Install with the command in vision/README.md so Torch comes from NVIDIA's Jetson index.
+numpy==1.26.4
+matplotlib==3.8.4
+opencv-python==4.10.0.84
+torch==2.8.0
+torchvision==0.23.0
+ultralytics==8.4.115
+lap==0.5.13
