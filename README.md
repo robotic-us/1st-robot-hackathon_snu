@@ -42,6 +42,9 @@ explicitly enabled.
   synthetic-data tools.
 - `sample_images/`, `training/` — curated evidence of the data and training
   workflow.
+- `artifacts/` — small, runnable pose/detection weights and selected training
+  outputs used to document the final result.
+- `assets/meshes/` — the shoe meshes used by the synthetic-data workflow.
 - `docs/` — architecture, implementation notes, and hackathon references.
 
 ## Run a camera-only demonstration
@@ -81,7 +84,11 @@ See [the architecture](docs/architecture.md),
 
 ## What is intentionally not committed
 
-Large generated datasets, raw captures, model weights, Blender scenes, local
-virtual environments, and cloud API credentials are excluded through
-`.gitignore`. The repository includes reproducible scripts and curated sample
-images instead. Never commit `.env` files, keys, or hardware-specific secrets.
+Large generated datasets, Blender scenes, local virtual environments, and
+cloud API credentials are excluded through `.gitignore`. The repository keeps
+the irreplaceable raw shoe/floor captures, source meshes, curated sample
+images, selected small checkpoints, and training evidence. Never commit `.env`
+files, keys, or hardware-specific secrets.
+
+For the retained-versus-regenerated inventory, see
+[the backup manifest](docs/backup-manifest.md).

@@ -1,0 +1,65 @@
+{
+  "model": "kimi-k3",
+  "shoes": [
+    {
+      "label": "beige suede clog/sandal with buckle (Cotton On)",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 22,
+      "y_min": 196,
+      "x_max": 290,
+      "y_max": 1000,
+      "box_px": [
+        28,
+        141,
+        371,
+        720
+      ]
+    },
+    {
+      "label": "white Converse low-top sneaker",
+      "side": "unknown",
+      "confidence": 0.99,
+      "x_min": 286,
+      "y_min": 42,
+      "x_max": 669,
+      "y_max": 826,
+      "box_px": [
+        366,
+        30,
+        856,
+        595
+      ]
+    },
+    {
+      "label": "white Converse low-top sneaker",
+      "side": "unknown",
+      "confidence": 0.99,
+      "x_min": 497,
+      "y_min": 129,
+      "x_max": 960,
+      "y_max": 814,
+      "box_px": [
+        636,
+        93,
+        1229,
+        586
+      ]
+    },
+    {
+      "label": "beige clog/sandal with buckle, partially visible",
+      "side": "unknown",
+      "confidence": 0.9,
+      "x_min": 572,
+      "y_min": 480,
+      "x_max": 984,
+      "y_max": 1000,
+      "box_px": [
+        732,
+        346,
+        1260,
+        720
+      ]
+    }
+  ]
+}

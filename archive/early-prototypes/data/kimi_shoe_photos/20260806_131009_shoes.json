@@ -1,0 +1,35 @@
+{
+  "model": "kimi-k3",
+  "shoes": [
+    {
+      "label": "beige suede clog with buckle strap",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 28,
+      "y_min": 12,
+      "x_max": 435,
+      "y_max": 798,
+      "box_px": [
+        36,
+        9,
+        557,
+        575
+      ]
+    },
+    {
+      "label": "beige suede clog with buckle strap",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 345,
+      "y_min": 202,
+      "x_max": 815,
+      "y_max": 855,
+      "box_px": [
+        442,
+        145,
+        1043,
+        616
+      ]
+    }
+  ]
+}

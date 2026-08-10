@@ -1,0 +1,35 @@
+{
+  "model": "kimi-k3",
+  "shoes": [
+    {
+      "label": "white Converse sneaker",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 166,
+      "y_min": 402,
+      "x_max": 658,
+      "y_max": 974,
+      "box_px": [
+        212,
+        289,
+        842,
+        701
+      ]
+    },
+    {
+      "label": "white Converse sneaker",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 294,
+      "y_min": 151,
+      "x_max": 773,
+      "y_max": 711,
+      "box_px": [
+        376,
+        109,
+        989,
+        512
+      ]
+    }
+  ]
+}

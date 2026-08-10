@@ -31,7 +31,7 @@ from live_shoe_tracker import open_camera  # noqa: E402
 
 # This is the real-photo pose model.  ``vision/models/shoe-detector.pt`` is
 # detection-only, so it can draw boxes but cannot supply heel/toe landmarks.
-DEFAULT_MODEL = PROJECT.parent / "runs" / "pose" / "runs" / "shoe_pose_real_only_baseline" / "weights" / "best.pt"
+DEFAULT_MODEL = PROJECT / "artifacts" / "models" / "shoe-pose-real-only-baseline.pt"
 CALIBRATION_FILE = Path(__file__).with_name("camera_floor_calibration.json")
 FLOOR_WIDTH_CM = 50.0
 FLOOR_HEIGHT_CM = 80.0

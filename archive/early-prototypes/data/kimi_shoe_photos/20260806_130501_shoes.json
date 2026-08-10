@@ -1,0 +1,20 @@
+{
+  "model": "kimi-k3",
+  "shoes": [
+    {
+      "label": "white Converse low-top sneaker",
+      "side": "unknown",
+      "confidence": 0.98,
+      "x_min": 218,
+      "y_min": 256,
+      "x_max": 744,
+      "y_max": 689,
+      "box_px": [
+        279,
+        184,
+        952,
+        496
+      ]
+    }
+  ]
+}

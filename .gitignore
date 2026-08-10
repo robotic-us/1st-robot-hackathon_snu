@@ -19,6 +19,13 @@ runs/
 *.engine
 *.blend1
 
+# Curated, versioned portfolio artifacts.  These are intentionally small
+# enough for regular Git; large experiment outputs still belong in artifact
+# storage rather than the source tree.
+!artifacts/
+!artifacts/**
+!artifacts/models/*.pt
+
 # Credentials
 .env
 .env.*

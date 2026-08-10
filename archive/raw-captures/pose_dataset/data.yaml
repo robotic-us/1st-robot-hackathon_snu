@@ -1,0 +1,12 @@
+path: /home/phorce/comp/real_shoes/pose_dataset
+train: images/train
+val: images/val
+kpt_shape: [2, 3]
+flip_idx: [0, 1]
+names:
+  0: pair1_right
+  1: pair1_left
+  2: pair2_right
+  3: pair2_left
+  4: pair3_right
+  5: pair3_left

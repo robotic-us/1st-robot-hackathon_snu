@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "notes": [
+    "object1 is provisionally labeled right and object2 left; swap them if physical verification disagrees.",
+    "object3 is one side of the brown pair; do not infer its missing mate for left/right training."
+  ],
+  "assets": [
+    {
+      "asset_id": "white_pair_object1",
+      "obj_path": "object1/3DModel.obj",
+      "pair_id": "white_converse_pair",
+      "side": "right",
+      "length_cm": 30.0,
+      "source_up_axis": "+Y",
+      "source_toe_axis": "+Z"
+    },
+    {
+      "asset_id": "white_pair_object2",
+      "obj_path": "object2/3DModel.obj",
+      "pair_id": "white_converse_pair",
+      "side": "left",
+      "length_cm": 30.0,
+      "source_up_axis": "+Y",
+      "source_toe_axis": "+X"
+    },
+    {
+      "asset_id": "brown_pair_object3",
+      "obj_path": "object3/3DModel.obj",
+      "pair_id": "brown_nike_pair",
+      "side": "unknown",
+      "length_cm": 29.0,
+      "source_up_axis": "+Y",
+      "source_toe_axis": "+Z"
+    }
+  ]
+}
