@@ -1,13 +1,11 @@
-# Ten-situation shoe controller
+# 0-degree, angle-only shoe controller
 
 The camera runs live inside the controller and keeps showing the YOLO boxes,
-labeled heel/toe points, heel-to-toe arrow, and every configured situation.
-The wide right-side telemetry panel shows a rolling numeric stream plus box,
-landmark, angle, confidence, tracking, and lock information for every visible
-shoe. Thin yellow lines connect every shoe centre to the camera's bottom-centre
-origin; these show each shoe's origin bearing. A situation is a known
-combination of shoe position and rotation.  Each mapped PHORCE slot is a full
-taught motion from that input situation to the one destination at 0 degrees.
+labeled heel/toe points and heel-to-toe arrow. The controller accepts either
+one shoe or exactly two shoes in view. Positions are ignored; when two shoes
+are shown, their heel-to-toe angles must be aligned within 18° and their shared
+average angle chooses the situation. The only valid case is `0°` with a ±18°
+tolerance.
 
 ```text
 live camera -> same situation for 5 seconds -> double-tap Space -> robot.play(mapped_slot)
@@ -27,22 +25,21 @@ The launcher is important: it uses the project's CUDA 12.6 virtual environment
 that can access the Orin GPU. The global `python3` has an incompatible CUDA
 13.0 PyTorch installation, so it is CPU-only here.
 
-## Configure the ten situations
+## Configure the motion sequence
 
-Edit `operations/motion_map.py` for each physical setup:
+The controller is configured for the `0° ±18°` angle band and runs PCM slots
+`11`, `12`, `13`, then `16` after a confirmed double-Space.
 
-1. Put the shoe in the desired position and rotation.
-2. Read its pixel centre and displayed angle from the camera window.
-3. Teach/test its complete collection-to-destination motion in Studio.
-4. Enter its centre, expected angle, and verified PCM motion slot ID.
-
-Once all ten are verified, explicitly enable real motion:
+Once all four slots are verified, explicitly enable real motion:
 
 ```bash
 bash operations/run_shoe_valet_gpu.sh --execute
 ```
 
-Show exactly one shoe. The controller requires the same situation for five
-seconds, shows `LOCKED`, and then still requires two Space presses within 0.5
-seconds. `Q`/`Esc` quits only when no motion is running; the physical E-stop
-remains the emergency stop.
+Show one shoe, or exactly two shoes aligned within 18°. The controller then
+visibly counts down five seconds and shows `NEXT SITUATION` plus a `PREVIEW`
+before any key press. The first Space starts a visible confirmation countdown;
+the second Space within 0.5 seconds runs the displayed situation's four
+motion slots with one-second pauses. Camera updates and keyboard input remain
+frozen for the entire sequence; the physical E-stop remains the emergency
+stop.

@@ -1,12 +1,11 @@
-"""The ten camera situations and their verified PHORCE motions.
+"""The single angle-only camera situation and its verified PHORCE motions.
 
-Each situation is one known shoe centre and toe direction in the fixed overhead
-camera view.  Its matching PHORCE slot should contain the *complete* taught
-motion: collect from that situation, then place at the one destination in
-front of the robot (0 degrees).
+Position is deliberately ignored: only its heel-to-toe angle chooses the
+situation. The sole valid angle band is centred on 0° and accepts a maximum
+error of 18°.
 
-Fill ``center_px`` and ``motion_id`` only after camera/robot calibration and
-manual motion testing.  An unconfigured situation is ignored.
+Fill ``motion_ids`` only after manually verifying the four-part taught
+motion. ``None`` leaves that situation unavailable for real execution.
 """
 
 from __future__ import annotations
@@ -18,27 +17,20 @@ from typing import Optional
 @dataclass(frozen=True)
 class Situation:
     name: str
-    # Centre of the shoe in pixels in the live 1280x720 camera image.
-    center_px: Optional[tuple[int, int]]
+    # Retained for compatibility with the display code.  Angle-only matching
+    # deliberately ignores this field.
+    center_cm: Optional[tuple[float, float]]
     # Heel -> toe direction; 0° is up/away from the robot, left is positive.
     angle_deg: float
-    # How close a detected shoe must be to this taught situation.
-    position_tolerance_px: float = 55.0
+    # Retained for compatibility; position is not used for matching.
+    position_tolerance_cm: float = 4.0
     angle_tolerance_deg: float = 15.0
-    # PCM slot ID (1..50), after manual verification. None = unavailable.
-    motion_id: Optional[int] = None
+    # Four PCM slot IDs (1..50), after manual verification. The controller
+    # pauses one second between them. None = unavailable.
+    motion_ids: Optional[tuple[int, int, int, int]] = None
 
 
-# Replace each ``None`` centre and motion ID with measured, verified values.
+# The four verified PCM steps run in this order after double-Space.
 SITUATIONS = (
-    Situation("situation_01", None, 0.0),
-    Situation("situation_02", None, 0.0),
-    Situation("situation_03", None, 0.0),
-    Situation("situation_04", None, 0.0),
-    Situation("situation_05", None, 0.0),
-    Situation("situation_06", None, 0.0),
-    Situation("situation_07", None, 0.0),
-    Situation("situation_08", None, 0.0),
-    Situation("situation_09", None, 0.0),
-    Situation("situation_10", None, 0.0),
+    Situation("situation_01  (0 deg)", None, 0.0, angle_tolerance_deg=18.0, motion_ids=(11, 12, 13, 16)),
 )

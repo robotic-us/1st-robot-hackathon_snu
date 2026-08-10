@@ -1,66 +1,87 @@
-# Shoe valet hackathon project
+# PHORCE Shoe Valet
 
-This folder is the clean working project for the hackathon. Original files in
-`/home/phorce/yolo` and `/home/phorce/Downloads/1st-robot-hackathon_snu` remain
-unchanged.
+An overhead-camera shoe valet prototype built for the 1st Robot Hackathon at
+Seoul National University. The project detects one or two shoes, estimates
+their heel-to-toe heading, waits for a stable safe condition, and then selects
+a manually verified PHORCE motion sequence.
 
-## Current status
+> **Safety status:** this is a supervised prototype. Camera-only dry-run is
+> the default. Real robot motion requires explicit `--execute`, manually
+> verified PCM slots, a clear workspace, and the physical E-stop.
 
-The vision module is working on the fixed overhead webcam and Jetson GPU. It
-detects shoes, keeps ByteTrack IDs, displays robot-relative bearings, and has
-an optional Gemini-assisted toe/heel/tongue estimate for sneaker hook pickup.
+## What it demonstrates
 
-## Model status
+- **Computer vision:** YOLO pose inference on a fixed overhead camera, with
+  shoe boxes, heel/toe landmarks, tracking, and orientation overlays.
+- **Physical calibration:** four-corner perspective calibration converts camera
+  pixels to a measured 50 x 80 cm floor workspace.
+- **Robot integration:** a five-second stability lock plus double-Space
+  confirmation gates a four-part taught PHORCE sequence.
+- **Data work:** Blender-generated and manually labelled real-shoe data were
+  used for the pose-model experiments. Representative samples and training
+  metrics are included; full datasets and weights remain local.
 
-Two white/gray sneaker pose models are available:
+## System flow
 
-- **Mixed model:** 1,000 Blender-generated images plus 250 labelled real
-  images — `/home/phorce/runs/pose/runs/shoe_pose_white_gray_final/weights/best.pt`.
-- **Real-only baseline:** 250 labelled real images —
-  `/home/phorce/runs/pose/runs/shoe_pose_real_only_baseline/weights/best.pt`.
-
-The real-only model scored 99.5% box/pose mAP@50 and 98.3% pose mAP@50–95 on
-its 51 held-out real images. It locates shoes and heel/toe points very well,
-but left/right classification remains unreliable, especially for gray shoes.
-Those validation images came from the same capture sequences as training, so
-live-camera testing is the deciding evaluation.
-
-The robot operations skeleton is in `operations/`. It is dry-run by default,
-has no verified motion IDs, and cannot move the robot until those IDs are
-explicitly configured. Before real execution, complete the following in order:
-
-1. Calibrate camera pixels to the physical floor and robot coordinate frame.
-2. Test Gemini toe/heel/tongue estimates on the actual shoes and choose a
-   confidence threshold that reliably rejects uncertain results.
-3. Define a safe hook approach, insertion, lift, retreat, and bin-placement
-   motion for the PHORCE arm.
-4. Add a manual approval/stop path and workspace safety boundaries before any
-   autonomous motion.
-
-## Layout
-
-- `vision/` — runnable GPU shoe detector/tracker, model, orientation mode, and
-  camera calibration.
-- `datasets/white_gray_final/` — final combined training dataset: 1,000
-  synthetic images plus 250 labelled real white/gray images.
-- `generated/white_gray_pose_1000/` — Blender-generated source images and
-  YOLO pose labels; keep this as the reproducible synthetic-data source.
-- `real_shoes/` — original captures and manual labels; keep untouched.
-- `obj_files/` and `floor/` — Blender shoe meshes and real-floor references.
-- `runs/` — earlier local training runs kept for comparison.
-- `scripts/` and `tools/blender/` — capture, labelling, dataset-preparation,
-  and Blender-generation utilities.
-- `docs/hackathon-reference.md` — PHORCE API, motion-slot, and safety reference.
-- `operations/` — safe discrete state machine and the verified-motion map.
-
-Start with [vision/README.md](vision/README.md).
-
-## Fast start
-
-```bash
-cd /home/phorce/comp/vision
-bash run_live_shoe_tracker_gpu.sh --gemini-orientation
+```text
+overhead camera -> YOLO pose + tracking -> heading validation
+       -> 5 s stable lock -> double-Space confirmation -> verified PCM slots
 ```
 
-Use `Q` or `Esc` to quit. Gemini orientation is visual guidance only; it must
-not directly command the arm.
+The current controller accepts either one shoe or two shoes aligned within
+18 degrees. Their selected heading must be 0 degrees (+/-18 degrees), then it
+runs the four manually taught slots `11 -> 12 -> 13 -> 16` when execution is
+explicitly enabled.
+
+## Repository layout
+
+- `operations/` — the safe, discrete PHORCE controller and camera-floor
+  calibration utility.
+- `vision/` — Jetson GPU tracker, model setup, and vision experiments.
+- `scripts/`, `tools/blender/` — capture, labelling, dataset-preparation, and
+  synthetic-data tools.
+- `sample_images/`, `training/` — curated evidence of the data and training
+  workflow.
+- `docs/` — architecture, implementation notes, and hackathon references.
+
+## Run a camera-only demonstration
+
+On the Jetson used for development (JetPack 6.2 / CUDA 12.6):
+
+```bash
+git clone https://github.com/robotic-us/1st-robot-hackathon_snu.git
+cd 1st-robot-hackathon_snu/vision
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements-jetson-gpu.txt \
+  --extra-index-url=https://pypi.jetson-ai-lab.io/jp6/cu126
+cd ..
+bash operations/run_shoe_valet_gpu.sh
+```
+
+The default invocation never connects to or moves the robot. Press `Q` or
+`Esc` to exit. Press `C` in the controller to record the four floor corners in
+TL, TR, BR, BL order when recalibrating the workspace.
+
+To operate the arm, first review and manually verify every taught PCM slot.
+Only then use `bash operations/run_shoe_valet_gpu.sh --execute` under direct
+supervision.
+
+## Results and limitations
+
+The real-only pose baseline achieved 99.5% box/pose mAP@50 and 98.3% pose
+mAP@50-95 on 51 held-out images from the captured data. Because these images
+share capture sessions with the training material, live-camera evaluation is
+the meaningful acceptance test. Left/right classification was not reliable
+enough to become a robot-control input.
+
+See [the architecture](docs/architecture.md),
+[the development record](docs/project-history.md), and
+[the controller guide](operations/README.md) for details.
+
+## What is intentionally not committed
+
+Large generated datasets, raw captures, model weights, Blender scenes, local
+virtual environments, and cloud API credentials are excluded through
+`.gitignore`. The repository includes reproducible scripts and curated sample
+images instead. Never commit `.env` files, keys, or hardware-specific secrets.
